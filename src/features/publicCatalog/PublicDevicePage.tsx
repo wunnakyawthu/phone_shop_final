@@ -6,6 +6,7 @@ import { loadPublicDevice, type PublicCatalogDevice } from './publicCatalogApi'
 import { PublicCatalogLayout } from './PublicCatalogLayout'
 import { useStoreBranding } from '../settings/storeBranding'
 import { BackLink } from '../../components/navigation/BackLink'
+import { TelegramIcon } from '../../components/icons/SocialIcons'
 
 function money(value: number) {
   return `${new Intl.NumberFormat('en-US').format(value)} MMK`
@@ -351,6 +352,17 @@ export function PublicDevicePage() {
                           Facebook
                         </a>
                       )}
+                      {branding.telegramUrl && (
+                                        <a
+                                          href={branding.telegramUrl}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className="inline-flex items-center gap-2 rounded-full bg-[#229ED9] px-4 py-2.5 text-sm font-semibold text-white"
+                                        >
+                                          <TelegramIcon className="h-5 w-5" />
+                                          Telegram
+                                        </a>
+                                      )}
                     </div>
                   )}
                 </div>
