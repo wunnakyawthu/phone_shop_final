@@ -8,12 +8,14 @@ export function ContactPicker({
   onChange,
   placeholder,
   className = 'premium-input',
+  refreshKey = 0,
 }: {
   kind: 'customer' | 'supplier'
   name: string
   phone: string
   onChange: (value: { id?: string; name: string; phone: string }) => void
   placeholder: string
+  refreshKey?: number
   className?: string
 }) {
   const [contacts, setContacts] = useState<any[]>([])
@@ -28,14 +30,18 @@ export function ContactPicker({
       .eq('is_active', true)
       .order('full_name')
       .then(({ data }: any) => setContacts(data ?? []))
-  }, [kind])
+  }, [kind, refreshKey])
 
   const matches = useMemo(() => {
-    const query = `${name} ${phone}`.trim().toLowerCase()
-    if (!query) return contacts.slice(0, 8)
-    return contacts.filter((item) =>
-      `${item.full_name} ${item.phone_number}`.toLowerCase().includes(query),
-    ).slice(0, 8)
+    // Search by either name or phone, including a phone typed into the name box.
+    const queries = [name, phone].map((value) => value.trim().toLowerCase()).filter(Boolean)
+    if (!queries.length) return contacts.slice(0, 8)
+    return contacts.filter((item) => {
+      const text = `${item.full_name} ${item.phone_number}`.toLowerCase()
+      const digits = String(item.phone_number ?? '').replace(/\D/g, '')
+      return queries.some((query) => text.includes(query) ||
+        (/^[+\d\s()-]+$/.test(query) && digits.includes(query.replace(/\D/g, ''))))
+    }).slice(0, 8)
   }, [contacts, name, phone])
 
   return (
