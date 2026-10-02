@@ -38,6 +38,7 @@ export function PosPage({ category }: { category: PosCategory }) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [customerRefreshKey, setCustomerRefreshKey] = useState(0)
 
   useEffect(() => {
     Promise.all([loadPosInventory(category), loadReceiptSettings()])
@@ -99,6 +100,7 @@ export function PosPage({ category }: { category: PosCategory }) {
         items: cart,
       })
       setReceipt(sale)
+      setCustomerRefreshKey((value) => value + 1)
       setInventory((all) => all.filter((i) => !cart.some((c) => c.id === i.id)))
       setCart([])
     } catch (e) {
@@ -144,7 +146,7 @@ export function PosPage({ category }: { category: PosCategory }) {
                   Walk-in customer by default
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
-                  Add a phone number to see this customer's previous purchases.
+                  Enter a phone number to save this customer and find their previous purchases.
                 </p>
               </div>
               <span className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-500 shadow-sm">
@@ -154,17 +156,19 @@ export function PosPage({ category }: { category: PosCategory }) {
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <ContactPicker
                 kind="customer"
+                refreshKey={customerRefreshKey}
                 name={customerName}
                 phone={customerPhone}
                 onChange={(value) => {
                   setCustomerName(value.name)
                   setCustomerPhone(value.phone)
+                  setHistory([])
                   if (value.phone)
                     void loadCustomerHistory(value.phone)
                       .then(setHistory)
                       .catch(() => setHistory([]))
                 }}
-                placeholder="Customer name"
+                placeholder="Search customer name or phone"
               />
               <input
                 value={customerPhone}
