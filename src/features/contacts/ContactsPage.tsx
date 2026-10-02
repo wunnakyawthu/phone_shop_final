@@ -64,7 +64,7 @@ export function ContactsPage({ kind }: { kind: DirectoryKind }) {
         full_name: name.trim(),
         phone_number: phone.trim(),
         notes: notes.trim() || null,
-        contact_type: kind === 'customer' ? 'customer' : 'seller',
+        contact_type: editing?.contact_type === 'both' ? 'both' : kind === 'customer' ? 'customer' : 'seller',
         is_active: true,
       }
       const query = editing
