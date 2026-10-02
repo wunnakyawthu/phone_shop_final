@@ -128,6 +128,9 @@ export async function createPosSale(input: {
   warrantyDurationDays: number
   items: PosCartItem[]
 }) {
+  if (input.customerName.trim() && !input.customerPhone.trim()) {
+    throw new Error('Enter a customer phone number to save this customer, or leave both fields empty for a walk-in sale.')
+  }
   const { data: saleId, error } = await client().rpc('create_pos_sale_v3', {
     p_category: input.category,
     p_sale: {
